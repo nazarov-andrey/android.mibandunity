@@ -184,6 +184,7 @@ final class BluetoothIO extends BluetoothGattCallback {
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         super.onConnectionStateChange(gatt, status, newState);
 
+        Log.d(TAG, "onConnectionStateChange " + newState);
         if (newState == BluetoothProfile.STATE_CONNECTED) {
             gatt.discoverServices();
         } else {

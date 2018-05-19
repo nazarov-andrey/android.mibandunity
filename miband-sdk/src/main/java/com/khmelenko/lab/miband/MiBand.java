@@ -351,9 +351,7 @@ public final class MiBand implements BluetoothListener {
      * Starts heart rate scanner
      */
     public Observable<Void> startHeartRateScan() {
-        Log.d(TAG, "startHeartRateScan 0");
         return Observable.create(subscriber -> {
-            Log.d(TAG, "startHeartRateScan 1");
             mHeartRateSubject.subscribe(new ObserverWrapper<>(subscriber));
             mBluetoothIO.writeCharacteristic(Profile.UUID_SERVICE_HEARTRATE, Profile.UUID_CHAR_HEARTRATE, Protocol.START_HEART_RATE_SCAN);
         });
@@ -414,9 +412,12 @@ public final class MiBand implements BluetoothListener {
 
     @Override
     public void onResult(BluetoothGattCharacteristic data) {
+        Log.d(TAG,"onResult " + data);
+
         UUID serviceId = data.getService().getUuid();
         UUID characteristicId = data.getUuid();
         if (serviceId.equals(Profile.UUID_SERVICE_MILI)) {
+            Log.d(TAG,"Profile.UUID_SERVICE_MILI");
 
             // pair
             if (characteristicId.equals(Profile.UUID_CHAR_PAIR)) {
@@ -523,9 +524,13 @@ public final class MiBand implements BluetoothListener {
 
         // heart rate
         if (serviceId.equals(Profile.UUID_SERVICE_HEARTRATE)) {
+            Log.d(TAG,"Profile.UUID_SERVICE_HEARTRATE");
+
             if (characteristicId.equals(Profile.UUID_CHAR_HEARTRATE)) {
+                Log.d(TAG,"Profile.UUID_CHAR_HEARTRATE");
                 byte[] changedValue = data.getValue();
                 if (Arrays.equals(changedValue, Protocol.START_HEART_RATE_SCAN)) {
+                    Log.d(TAG,"Profile.START_HEART_RATE_SCAN");
                     mHeartRateSubject.onComplete();
 
                     mHeartRateSubject = PublishSubject.create();
@@ -544,6 +549,8 @@ public final class MiBand implements BluetoothListener {
 
     @Override
     public void onFail(UUID serviceId, UUID characteristicId, String msg) {
+        Log.e(TAG, "onFail " + msg);
+
         if (serviceId.equals(Profile.UUID_SERVICE_MILI)) {
 
             // Battery info
